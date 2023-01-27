@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:async' show Future;
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:project_score/db/pj_songs_db.dart';
+
 
 Future<List> loadLocalJson() async {
   String jsonString = await rootBundle.loadString("json/pjsekai_song.json");
   Map jsonData = json.decode(jsonString);
-  print(jsonData["songs"]);
+  // print(jsonData["songs"]);
   // List loadedList = jsonData[time];
   // List resultList = [];
   // for (int i = 0; i < loadedList.length; i++) {
@@ -26,4 +28,8 @@ String pickSongData(Map songData) {
     songName = key;
   });
   return songName;
+}
+
+void upsertSongs(List songsList){
+
 }

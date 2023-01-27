@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:project_score/db/pj_songs_db.dart';
 import 'package:project_score/views/song_list.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'face_detector_view.dart';
 
 void main() {
   runApp(
-    ProviderScope(
+    const ProviderScope(
       child: MyApp(),
     ),
   );
@@ -13,11 +14,9 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
       home: Home(),
     );
   }
