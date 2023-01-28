@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project_score/db/db.dart';
 import 'package:project_score/db/pj_songs_db.dart';
 import 'package:project_score/model/load_json.dart';
 
@@ -15,27 +16,8 @@ class ShowListState extends ConsumerState<ShowList> {
   void initState(){
     super.initState();
     final database = ref.read(MyDatabase.provider);
-
-    String songName = "";
-    int eDiff =0;
-    int nDiff =0;
-    int hDiff =0;
-    int exDiff= 0;
-    int mDiff =0;
     Future(() async {
-      List songsList = await loadLocalJson();
-      for (Map songData in songsList){
-        songData.forEach((key, value){
-          songName = key;
-          eDiff = value["e_diff"];
-          nDiff = value["n_diff"];
-          hDiff = value["h_diff"];
-          exDiff = value["ex_diff"];
-          mDiff = value["m_diff"];
-          database.upsertSong(PjSongsCompanion.insert(songName: songName,eDiff: eDiff,nDiff: nDiff,hDiff: hDiff,exDiff: exDiff,mDiff: mDiff));
-        });
-
-      }
+      upsertPjSongDb(database);
       final allCategories = await database.select(database.pjSongs).get();
       print(allCategories);
     });
