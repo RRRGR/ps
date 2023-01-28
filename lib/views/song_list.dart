@@ -18,15 +18,11 @@ class ShowListState extends ConsumerState<ShowList> {
     final database = ref.read(MyDatabase.provider);
     Future(() async {
       upsertPjSongDb(database);
-      final allCategories = await database.select(database.pjSongs).get();
-      print(allCategories);
     });
-
-
   }
+
   @override
   Widget build(BuildContext context) {
-
     return FutureBuilder(
       future: loadLocalJson(),
       builder: (BuildContext context, AsyncSnapshot<List> snapshot) {

@@ -17,7 +17,7 @@ Future upsertPjSongDb(MyDatabase database) async{
       hDiff = value["h_diff"];
       exDiff = value["ex_diff"];
       mDiff = value["m_diff"];
-      database.upsertSong(PjSongsCompanion.insert(songName: songName,eDiff: eDiff,nDiff: nDiff,hDiff: hDiff,exDiff: exDiff,mDiff: mDiff));
+      database.upsertSong(PjSongsCompanion.insert(songName: songName,easyDiff: eDiff,normalDiff: nDiff,hardDiff: hDiff,expertDiff: exDiff,masterDiff: mDiff));
     });
   }
 }
