@@ -39,7 +39,7 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
         inputImage.inputImageData?.imageRotation != null) {
     } else {
       _text = 'Recognized text:\n\n${recognizedText.text}';
-      String songGreat = parseScore(recognizedText);
+      List songGreat = parseScore(recognizedText);
       print(songGreat);
       _textRecognizer.close();
     }
