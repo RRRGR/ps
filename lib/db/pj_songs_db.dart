@@ -113,6 +113,8 @@ class MyDatabase extends _$MyDatabase {
     return into(pjMasterScores).insertOnConflictUpdate(songData);
   }
 
+  Future<List<PjSong>> get getAllSongs => select(pjSongs).get();
+
   static Provider<MyDatabase> provider = Provider((ref) {
     final database = MyDatabase();
     ref.onDispose(database.close);

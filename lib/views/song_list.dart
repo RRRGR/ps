@@ -23,8 +23,9 @@ class ShowListState extends ConsumerState<ShowList> {
 
   @override
   Widget build(BuildContext context) {
+    final database = ref.watch(MyDatabase.provider);
     return FutureBuilder(
-      future: loadLocalJson(),
+      future: database.getAllSongs,
       builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
         if (snapshot.hasData) {
           List songData = snapshot.data!;
@@ -50,10 +51,10 @@ class ShowListState extends ConsumerState<ShowList> {
     );
   }
 
-  Widget _items(Map songData, BuildContext context) {
+  Widget _items(PjSong songData, BuildContext context) {
     return Container(
       child: Scrollbar(
-        child: Text(pickSongData(songData)),
+        child: Text(songData.songName),
       ),
     );
   }

@@ -4,11 +4,11 @@ import 'package:project_score/model/load_json.dart';
 Future upsertPjSongDb(MyDatabase database) async{
   List songsList = await loadLocalJson();
   String songName = "";
-  int eDiff =0;
-  int nDiff =0;
-  int hDiff =0;
+  int eDiff = 0;
+  int nDiff = 0;
+  int hDiff = 0;
   int exDiff= 0;
-  int mDiff =0;
+  int mDiff = 0;
   for (Map songData in songsList){
     songData.forEach((key, value){
       songName = key;
@@ -17,7 +17,7 @@ Future upsertPjSongDb(MyDatabase database) async{
       hDiff = value["h_diff"];
       exDiff = value["ex_diff"];
       mDiff = value["m_diff"];
-      database.upsertSong(PjSongsCompanion.insert(songName: songName,easyDiff: eDiff,normalDiff: nDiff,hardDiff: hDiff,expertDiff: exDiff,masterDiff: mDiff));
+      database.upsertSong(PjSongsCompanion.insert(songName: songName, easyDiff: eDiff, normalDiff: nDiff, hardDiff: hDiff, expertDiff: exDiff, masterDiff: mDiff));
     });
   }
 }
