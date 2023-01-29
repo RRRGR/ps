@@ -90,7 +90,9 @@ class MyDatabase extends _$MyDatabase {
   int get schemaVersion => 1;
 
   Future<int> upsertSong(PjSongsCompanion song) {
-    return into(pjSongs).insertOnConflictUpdate(song);
+    return into(pjSongs).insert(song,
+        onConflict: DoUpdate(target: [pjSongs.songName],
+        (old) => song),);
   }
 
   Future<int> upsertEasy(PjEasyScoresCompanion songData) {
@@ -115,11 +117,33 @@ class MyDatabase extends _$MyDatabase {
 
   Future<List<PjSong>> get getAllSongs => select(pjSongs).get();
 
+  Future songWithMaster() async {
+    final query = await select(pjSongs).join([leftOuterJoin(pjMasterScores, pjMasterScores.id.equalsExp(pjSongs.id)),]).get();
+    // return query;
+    // query.map((row) {
+    //   print(row);
+    //   dynamic a = row.readTableOrNull(pjSongs);
+    //   return a;
+    // });
+    final aaa = [];
+    for (var r in query){
+      print(r.readTable(pjSongs));
+      aaa.add(r.readTable(pjSongs));
+    }
+    return aaa;
+  }
+
   static Provider<MyDatabase> provider = Provider((ref) {
     final database = MyDatabase();
     ref.onDispose(database.close);
     return database;
   });
+}
+
+class SongWithMaster {
+  SongWithMaster(this.songs, this.master);
+  final PjSongs songs;
+  final PjMasterScores master;
 }
 
 LazyDatabase _openConnection() {

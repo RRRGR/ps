@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
@@ -22,6 +23,8 @@ class ShowListState extends ConsumerState<ShowList> {
     final database = ref.read(MyDatabase.provider);
     Future(() async {
       upsertPjSongDb(database);
+      dynamic aa = await database.songWithMaster();
+      print(aa);
     });
   }
 
@@ -35,19 +38,21 @@ class ShowListState extends ConsumerState<ShowList> {
           List songData = snapshot.data!;
           return Column(
             children: [
-              ElevatedButton(onPressed: () async {
-                final List<XFile>? images = await ImagePicker().pickMultiImage();
-                for (XFile image in images!) {
-                  dynamic path = image.path;
-                  if (path == null) {
-                    return;
-                  }
-                  final inputImage = InputImage.fromFilePath(path);
-                  List? s = await processImage(inputImage);
-                  // database.upsertMaster(PjMasterScoresCompanion.insert(id:1,masterHighScore:2));
-                  print(s);
-                }
-              }, child: Text("Photo")),
+              ElevatedButton(
+                  onPressed: () async {
+                    final List<XFile>? images = await ImagePicker().pickMultiImage();
+                    for (XFile image in images!) {
+                      dynamic path = image.path;
+                      if (path == null) {
+                        return;
+                      }
+                      final inputImage = InputImage.fromFilePath(path);
+                      List? s = await processImage(inputImage);
+                      // database.upsertMaster(PjMasterScoresCompanion.insert(id:1,masterHighScore:2));
+                      print(s);
+                    }
+                  },
+                  child: Text("Photo")),
               Expanded(
                 child: ListView.separated(
                   shrinkWrap: true,
