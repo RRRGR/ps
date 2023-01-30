@@ -59,6 +59,18 @@ class IsarService {
     }
   }
 
+  Future<void> updateMaster(Map scoreInfo) async {
+    final isar = await db;
+    List result =
+        await isar.pj_songs.filter().nameContains(scoreInfo["name"]).findAll();
+    final masterInfo = pj_diff_and_score()
+      ..bestPerfect = scoreInfo["perfect"]
+      ..bestGreat = scoreInfo["great"];
+    pj_song songInfo = pj_song()
+      ..id = result[0].id
+      ..master = masterInfo;
+  }
+
   Future<List> getPjMaster() async {
     final isar = await db;
     List result = await isar.pj_songs.where().findAll();

@@ -1,6 +1,6 @@
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 
-List parseScore(RecognizedText recognizedText) {
+Map parseScore(RecognizedText recognizedText) {
   List<String> textList = recognizedText.text.split('\n');
   String songName = textList[0];
   String songDiff = textList[1];
@@ -25,5 +25,15 @@ List parseScore(RecognizedText recognizedText) {
   print(songName);
   print(songDiff);
   print(songScore);
-  return [songName, songDiff, songScore, perfect, great, good, bad, miss];
+  Map scoreInfo = {
+    "name": songName,
+    "diffName": songDiff,
+    "highScore": songScore,
+    "perfect": int.parse(perfect),
+    "great": int.parse(great),
+    "good": int.parse(good),
+    "bad": int.parse(bad),
+    "miss": int.parse(miss),
+  };
+  return scoreInfo;
 }

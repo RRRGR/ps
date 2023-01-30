@@ -47,21 +47,42 @@ class ShowListState extends ConsumerState<ShowList> {
                         return;
                       }
                       final inputImage = InputImage.fromFilePath(path);
-                      List? s = await processImage(inputImage);
-                      // database.upsertMaster(PjMasterScoresCompanion.insert(id:1,masterHighScore:2));
-                      print(s);
+                      Map s = await processImage(inputImage);
+                      await IsarService().updateMaster(s);
                     }
                   },
                   child: Text("Photo")),
               Expanded(
-                child: ListView.separated(
-                  shrinkWrap: true,
-                  itemCount: songData.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return _items(songData[index], context);
-                  },
-                  separatorBuilder: (BuildContext context, int index) =>
-                      const Divider(),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: FittedBox(
+                    child: DataTable(
+                      columns: const [
+                        DataColumn(label: Text("曲名")),
+                        DataColumn(label: Text("難易度")),
+                        DataColumn(label: Text("レベル")),
+                        DataColumn(label: Text("Perfect")),
+                        DataColumn(label: Text("Great")),
+                      ],
+                      rows: songData
+                          .map((e) => DataRow(
+                                cells: [
+                                  DataCell(Text(e.name)),
+                                  const DataCell(Text("master")),
+                                  DataCell(Text(e.master.diff.toString())),
+                                  e.master.bestPerfect == null
+                                      ? DataCell(Text("-"))
+                                      : DataCell(Text(
+                                          e.master.bestPerfect.toString())),
+                                  e.master.bestGreat == null
+                                      ? DataCell(Text("-"))
+                                      : DataCell(
+                                          Text(e.master.bestGreat.toString())),
+                                ],
+                              ))
+                          .toList(),
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -73,20 +94,12 @@ class ShowListState extends ConsumerState<ShowList> {
     );
   }
 
-  Widget _items(pj_song songData, BuildContext context) {
-    return Container(
-      child: Scrollbar(
-        child: ListTile(title: Text(songData.name!)),
-      ),
-    );
-  }
-
   Future processImage(InputImage inputImage) async {
     final recognizedText = await _textRecognizer.processImage(inputImage);
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
     } else {
-      List s = parseScore(recognizedText);
+      Map s = parseScore(recognizedText);
       _textRecognizer.close();
       return s;
     }
