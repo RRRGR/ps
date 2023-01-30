@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:project_score/db/pj_songs_db.dart';
+import 'package:project_score/db/pj_songs.dart';
 import 'package:project_score/views/song_list.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'face_detector_view.dart';
@@ -16,13 +16,15 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: Home(),
     );
   }
 }
 
 class Home extends StatelessWidget {
+  const Home({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

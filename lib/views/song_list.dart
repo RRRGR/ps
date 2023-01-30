@@ -1,38 +1,37 @@
-import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:project_score/constant.dart';
 import 'package:project_score/db/db.dart';
-import 'package:project_score/db/pj_songs_db.dart';
+import 'package:project_score/db/pj_songs.dart';
 import 'package:project_score/model/load_json.dart';
 import 'package:project_score/parse_score.dart';
+import 'package:isar/isar.dart';
+import 'package:project_score/db/pj_songs.dart';
 
-
-class ShowList extends ConsumerStatefulWidget{
+class ShowList extends ConsumerStatefulWidget {
   const ShowList({super.key});
   @override
   ShowListState createState() => ShowListState();
 }
 
 class ShowListState extends ConsumerState<ShowList> {
-  final TextRecognizer _textRecognizer = TextRecognizer(script: TextRecognitionScript.japanese);
+  final TextRecognizer _textRecognizer =
+      TextRecognizer(script: TextRecognitionScript.japanese);
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    final database = ref.read(MyDatabase.provider);
+
     Future(() async {
-      upsertPjSongDb(database);
-      dynamic aa = await database.songWithMaster();
-      print(aa);
+      await IsarService().updatePjSong();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final database = ref.watch(MyDatabase.provider);
     return FutureBuilder(
-      future: database.getAllSongs,
+      future: IsarService().getPjMaster(),
       builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
         if (snapshot.hasData) {
           List songData = snapshot.data!;
@@ -40,8 +39,9 @@ class ShowListState extends ConsumerState<ShowList> {
             children: [
               ElevatedButton(
                   onPressed: () async {
-                    final List<XFile>? images = await ImagePicker().pickMultiImage();
-                    for (XFile image in images!) {
+                    final List<XFile> images =
+                        await ImagePicker().pickMultiImage();
+                    for (XFile image in images) {
                       dynamic path = image.path;
                       if (path == null) {
                         return;
@@ -73,10 +73,10 @@ class ShowListState extends ConsumerState<ShowList> {
     );
   }
 
-  Widget _items(PjSong songData, BuildContext context) {
+  Widget _items(pj_song songData, BuildContext context) {
     return Container(
       child: Scrollbar(
-        child: Text(songData.songName),
+        child: ListTile(title: Text(songData.name!)),
       ),
     );
   }

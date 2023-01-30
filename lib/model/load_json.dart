@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:async' show Future;
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:project_score/db/pj_songs_db.dart';
+import 'package:project_score/db/pj_songs.dart';
 
 
 Future<List> loadLocalJson() async {
