@@ -63,12 +63,15 @@ class IsarService {
     final isar = await db;
     List result =
         await isar.pj_songs.filter().nameContains(scoreInfo["name"]).findAll();
+    print(result[0].name);
     final masterInfo = pj_diff_and_score()
       ..bestPerfect = scoreInfo["perfect"]
       ..bestGreat = scoreInfo["great"];
     pj_song songInfo = pj_song()
       ..id = result[0].id
+      ..name = result[0].name
       ..master = masterInfo;
+    await isar.writeTxn(() async => await isar.pj_songs.put(songInfo));
   }
 
   Future<List> getPjMaster() async {
