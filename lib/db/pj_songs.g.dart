@@ -73,52 +73,22 @@ int _pj_songEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  {
-    final value = object.easy;
-    if (value != null) {
-      bytesCount += 3 +
-          Pj_diff_and_scoreSchema.estimateSize(
-              value, allOffsets[pj_diff_and_score]!, allOffsets);
-    }
-  }
-  {
-    final value = object.expert;
-    if (value != null) {
-      bytesCount += 3 +
-          Pj_diff_and_scoreSchema.estimateSize(
-              value, allOffsets[pj_diff_and_score]!, allOffsets);
-    }
-  }
-  {
-    final value = object.hard;
-    if (value != null) {
-      bytesCount += 3 +
-          Pj_diff_and_scoreSchema.estimateSize(
-              value, allOffsets[pj_diff_and_score]!, allOffsets);
-    }
-  }
-  {
-    final value = object.master;
-    if (value != null) {
-      bytesCount += 3 +
-          Pj_diff_and_scoreSchema.estimateSize(
-              value, allOffsets[pj_diff_and_score]!, allOffsets);
-    }
-  }
-  {
-    final value = object.name;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
-  {
-    final value = object.normal;
-    if (value != null) {
-      bytesCount += 3 +
-          Pj_diff_and_scoreSchema.estimateSize(
-              value, allOffsets[pj_diff_and_score]!, allOffsets);
-    }
-  }
+  bytesCount += 3 +
+      Pj_diff_and_scoreSchema.estimateSize(
+          object.easy, allOffsets[pj_diff_and_score]!, allOffsets);
+  bytesCount += 3 +
+      Pj_diff_and_scoreSchema.estimateSize(
+          object.expert, allOffsets[pj_diff_and_score]!, allOffsets);
+  bytesCount += 3 +
+      Pj_diff_and_scoreSchema.estimateSize(
+          object.hard, allOffsets[pj_diff_and_score]!, allOffsets);
+  bytesCount += 3 +
+      Pj_diff_and_scoreSchema.estimateSize(
+          object.master, allOffsets[pj_diff_and_score]!, allOffsets);
+  bytesCount += 3 + object.name.length * 3;
+  bytesCount += 3 +
+      Pj_diff_and_scoreSchema.estimateSize(
+          object.normal, allOffsets[pj_diff_and_score]!, allOffsets);
   return bytesCount;
 }
 
@@ -169,32 +139,37 @@ pj_song _pj_songDeserialize(
 ) {
   final object = pj_song();
   object.easy = reader.readObjectOrNull<pj_diff_and_score>(
-    offsets[0],
-    Pj_diff_and_scoreSchema.deserialize,
-    allOffsets,
-  );
+        offsets[0],
+        Pj_diff_and_scoreSchema.deserialize,
+        allOffsets,
+      ) ??
+      pj_diff_and_score();
   object.expert = reader.readObjectOrNull<pj_diff_and_score>(
-    offsets[1],
-    Pj_diff_and_scoreSchema.deserialize,
-    allOffsets,
-  );
+        offsets[1],
+        Pj_diff_and_scoreSchema.deserialize,
+        allOffsets,
+      ) ??
+      pj_diff_and_score();
   object.hard = reader.readObjectOrNull<pj_diff_and_score>(
-    offsets[2],
-    Pj_diff_and_scoreSchema.deserialize,
-    allOffsets,
-  );
+        offsets[2],
+        Pj_diff_and_scoreSchema.deserialize,
+        allOffsets,
+      ) ??
+      pj_diff_and_score();
   object.id = id;
   object.master = reader.readObjectOrNull<pj_diff_and_score>(
-    offsets[3],
-    Pj_diff_and_scoreSchema.deserialize,
-    allOffsets,
-  );
-  object.name = reader.readStringOrNull(offsets[4]);
+        offsets[3],
+        Pj_diff_and_scoreSchema.deserialize,
+        allOffsets,
+      ) ??
+      pj_diff_and_score();
+  object.name = reader.readString(offsets[4]);
   object.normal = reader.readObjectOrNull<pj_diff_and_score>(
-    offsets[5],
-    Pj_diff_and_scoreSchema.deserialize,
-    allOffsets,
-  );
+        offsets[5],
+        Pj_diff_and_scoreSchema.deserialize,
+        allOffsets,
+      ) ??
+      pj_diff_and_score();
   return object;
 }
 
@@ -207,36 +182,41 @@ P _pj_songDeserializeProp<P>(
   switch (propertyId) {
     case 0:
       return (reader.readObjectOrNull<pj_diff_and_score>(
-        offset,
-        Pj_diff_and_scoreSchema.deserialize,
-        allOffsets,
-      )) as P;
+            offset,
+            Pj_diff_and_scoreSchema.deserialize,
+            allOffsets,
+          ) ??
+          pj_diff_and_score()) as P;
     case 1:
       return (reader.readObjectOrNull<pj_diff_and_score>(
-        offset,
-        Pj_diff_and_scoreSchema.deserialize,
-        allOffsets,
-      )) as P;
+            offset,
+            Pj_diff_and_scoreSchema.deserialize,
+            allOffsets,
+          ) ??
+          pj_diff_and_score()) as P;
     case 2:
       return (reader.readObjectOrNull<pj_diff_and_score>(
-        offset,
-        Pj_diff_and_scoreSchema.deserialize,
-        allOffsets,
-      )) as P;
+            offset,
+            Pj_diff_and_scoreSchema.deserialize,
+            allOffsets,
+          ) ??
+          pj_diff_and_score()) as P;
     case 3:
       return (reader.readObjectOrNull<pj_diff_and_score>(
-        offset,
-        Pj_diff_and_scoreSchema.deserialize,
-        allOffsets,
-      )) as P;
+            offset,
+            Pj_diff_and_scoreSchema.deserialize,
+            allOffsets,
+          ) ??
+          pj_diff_and_score()) as P;
     case 4:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 5:
       return (reader.readObjectOrNull<pj_diff_and_score>(
-        offset,
-        Pj_diff_and_scoreSchema.deserialize,
-        allOffsets,
-      )) as P;
+            offset,
+            Pj_diff_and_scoreSchema.deserialize,
+            allOffsets,
+          ) ??
+          pj_diff_and_score()) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -331,54 +311,6 @@ extension pj_songQueryWhere on QueryBuilder<pj_song, pj_song, QWhereClause> {
 
 extension pj_songQueryFilter
     on QueryBuilder<pj_song, pj_song, QFilterCondition> {
-  QueryBuilder<pj_song, pj_song, QAfterFilterCondition> easyIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'easy',
-      ));
-    });
-  }
-
-  QueryBuilder<pj_song, pj_song, QAfterFilterCondition> easyIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'easy',
-      ));
-    });
-  }
-
-  QueryBuilder<pj_song, pj_song, QAfterFilterCondition> expertIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'expert',
-      ));
-    });
-  }
-
-  QueryBuilder<pj_song, pj_song, QAfterFilterCondition> expertIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'expert',
-      ));
-    });
-  }
-
-  QueryBuilder<pj_song, pj_song, QAfterFilterCondition> hardIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'hard',
-      ));
-    });
-  }
-
-  QueryBuilder<pj_song, pj_song, QAfterFilterCondition> hardIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'hard',
-      ));
-    });
-  }
-
   QueryBuilder<pj_song, pj_song, QAfterFilterCondition> idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -431,40 +363,8 @@ extension pj_songQueryFilter
     });
   }
 
-  QueryBuilder<pj_song, pj_song, QAfterFilterCondition> masterIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'master',
-      ));
-    });
-  }
-
-  QueryBuilder<pj_song, pj_song, QAfterFilterCondition> masterIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'master',
-      ));
-    });
-  }
-
-  QueryBuilder<pj_song, pj_song, QAfterFilterCondition> nameIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'name',
-      ));
-    });
-  }
-
-  QueryBuilder<pj_song, pj_song, QAfterFilterCondition> nameIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'name',
-      ));
-    });
-  }
-
   QueryBuilder<pj_song, pj_song, QAfterFilterCondition> nameEqualTo(
-    String? value, {
+    String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -477,7 +377,7 @@ extension pj_songQueryFilter
   }
 
   QueryBuilder<pj_song, pj_song, QAfterFilterCondition> nameGreaterThan(
-    String? value, {
+    String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -492,7 +392,7 @@ extension pj_songQueryFilter
   }
 
   QueryBuilder<pj_song, pj_song, QAfterFilterCondition> nameLessThan(
-    String? value, {
+    String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -507,8 +407,8 @@ extension pj_songQueryFilter
   }
 
   QueryBuilder<pj_song, pj_song, QAfterFilterCondition> nameBetween(
-    String? lower,
-    String? upper, {
+    String lower,
+    String upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
@@ -589,22 +489,6 @@ extension pj_songQueryFilter
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'name',
         value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<pj_song, pj_song, QAfterFilterCondition> normalIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'normal',
-      ));
-    });
-  }
-
-  QueryBuilder<pj_song, pj_song, QAfterFilterCondition> normalIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'normal',
       ));
     });
   }
@@ -710,37 +594,37 @@ extension pj_songQueryProperty
     });
   }
 
-  QueryBuilder<pj_song, pj_diff_and_score?, QQueryOperations> easyProperty() {
+  QueryBuilder<pj_song, pj_diff_and_score, QQueryOperations> easyProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'easy');
     });
   }
 
-  QueryBuilder<pj_song, pj_diff_and_score?, QQueryOperations> expertProperty() {
+  QueryBuilder<pj_song, pj_diff_and_score, QQueryOperations> expertProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'expert');
     });
   }
 
-  QueryBuilder<pj_song, pj_diff_and_score?, QQueryOperations> hardProperty() {
+  QueryBuilder<pj_song, pj_diff_and_score, QQueryOperations> hardProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'hard');
     });
   }
 
-  QueryBuilder<pj_song, pj_diff_and_score?, QQueryOperations> masterProperty() {
+  QueryBuilder<pj_song, pj_diff_and_score, QQueryOperations> masterProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'master');
     });
   }
 
-  QueryBuilder<pj_song, String?, QQueryOperations> nameProperty() {
+  QueryBuilder<pj_song, String, QQueryOperations> nameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'name');
     });
   }
 
-  QueryBuilder<pj_song, pj_diff_and_score?, QQueryOperations> normalProperty() {
+  QueryBuilder<pj_song, pj_diff_and_score, QQueryOperations> normalProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'normal');
     });
@@ -850,7 +734,7 @@ pj_diff_and_score _pj_diff_and_scoreDeserialize(
   object.bestGreat = reader.readLongOrNull(offsets[4]);
   object.bestMiss = reader.readLongOrNull(offsets[5]);
   object.bestPerfect = reader.readLongOrNull(offsets[6]);
-  object.diff = reader.readLongOrNull(offsets[7]);
+  object.diff = reader.readLong(offsets[7]);
   object.highScore = reader.readLongOrNull(offsets[8]);
   return object;
 }
@@ -877,7 +761,7 @@ P _pj_diff_and_scoreDeserializeProp<P>(
     case 6:
       return (reader.readLongOrNull(offset)) as P;
     case 7:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 8:
       return (reader.readLongOrNull(offset)) as P;
     default:
@@ -1314,25 +1198,7 @@ extension pj_diff_and_scoreQueryFilter
   }
 
   QueryBuilder<pj_diff_and_score, pj_diff_and_score, QAfterFilterCondition>
-      diffIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'diff',
-      ));
-    });
-  }
-
-  QueryBuilder<pj_diff_and_score, pj_diff_and_score, QAfterFilterCondition>
-      diffIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'diff',
-      ));
-    });
-  }
-
-  QueryBuilder<pj_diff_and_score, pj_diff_and_score, QAfterFilterCondition>
-      diffEqualTo(int? value) {
+      diffEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'diff',
@@ -1343,7 +1209,7 @@ extension pj_diff_and_scoreQueryFilter
 
   QueryBuilder<pj_diff_and_score, pj_diff_and_score, QAfterFilterCondition>
       diffGreaterThan(
-    int? value, {
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -1357,7 +1223,7 @@ extension pj_diff_and_scoreQueryFilter
 
   QueryBuilder<pj_diff_and_score, pj_diff_and_score, QAfterFilterCondition>
       diffLessThan(
-    int? value, {
+    int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -1371,8 +1237,8 @@ extension pj_diff_and_scoreQueryFilter
 
   QueryBuilder<pj_diff_and_score, pj_diff_and_score, QAfterFilterCondition>
       diffBetween(
-    int? lower,
-    int? upper, {
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {

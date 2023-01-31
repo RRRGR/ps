@@ -1,9 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
-import 'package:project_score/constant.dart';
 import 'package:project_score/db/pj_songs.dart';
 import 'package:project_score/model/load_json.dart';
+import 'package:string_similarity/string_similarity.dart';
 
 class IsarService {
   late Future<Isar> db;
@@ -59,17 +57,31 @@ class IsarService {
     }
   }
 
-  Future<void> updateMaster(Map scoreInfo) async {
+  Future<void> updateMaster(Map scoreData) async {
     final isar = await db;
     List result =
-        await isar.pj_songs.filter().nameContains(scoreInfo["name"]).findAll();
+        await isar.pj_songs.filter().nameContains(scoreData["name"]).findAll();
     print(result[0].name);
+    if (result.isEmpty) {
+      List allSongInfo = isar.pj_songs.where().findAllSync();
+      List<String> allSongName =
+          List.generate(allSongInfo.length, (index) => allSongInfo[index].name);
+      var bestMatch =
+          StringSimilarity.findBestMatch(scoreData["name"], allSongName);
+      print(bestMatch);
+      return;
+    }
+    final old_pj_songs = result[0];
     final masterInfo = pj_diff_and_score()
-      ..bestPerfect = scoreInfo["perfect"]
-      ..bestGreat = scoreInfo["great"];
+      ..bestPerfect = scoreData["perfect"]
+      ..bestGreat = scoreData["great"];
     pj_song songInfo = pj_song()
-      ..id = result[0].id
-      ..name = result[0].name
+      ..id = old_pj_songs.id
+      ..name = old_pj_songs.name
+      ..easy = old_pj_songs.easy
+      ..normal = old_pj_songs.normal
+      ..hard = old_pj_songs.hard
+      ..expert = old_pj_songs.expert
       ..master = masterInfo;
     await isar.writeTxn(() async => await isar.pj_songs.put(songInfo));
   }

@@ -6,17 +6,17 @@ part 'pj_songs.g.dart';
 class pj_song {
   Id id = Isar.autoIncrement;
 
-  String? name;
-  pj_diff_and_score? easy;
-  pj_diff_and_score? normal;
-  pj_diff_and_score? hard;
-  pj_diff_and_score? expert;
-  pj_diff_and_score? master;
+  late String name;
+  late pj_diff_and_score easy;
+  late pj_diff_and_score normal;
+  late pj_diff_and_score hard;
+  late pj_diff_and_score expert;
+  late pj_diff_and_score master;
 }
 
 @embedded
 class pj_diff_and_score {
-  int? diff;
+  late int diff;
   int? highScore;
   int? bestPerfect;
   int? bestGreat;
