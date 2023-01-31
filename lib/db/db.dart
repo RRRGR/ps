@@ -61,18 +61,22 @@ class IsarService {
     final isar = await db;
     List result =
         await isar.pj_songs.filter().nameContains(scoreData["name"]).findAll();
-    print(result[0].name);
     if (result.isEmpty) {
       List allSongInfo = isar.pj_songs.where().findAllSync();
       List<String> allSongName =
           List.generate(allSongInfo.length, (index) => allSongInfo[index].name);
-      var bestMatch =
+      BestMatch bestMatch =
           StringSimilarity.findBestMatch(scoreData["name"], allSongName);
-      print(bestMatch);
-      return;
+      print(bestMatch.bestMatch.target);
+      scoreData["name"] = bestMatch.bestMatch.target;
+      result = await isar.pj_songs
+          .filter()
+          .nameContains(scoreData["name"])
+          .findAll();
     }
     final old_pj_songs = result[0];
     final masterInfo = pj_diff_and_score()
+      ..diff = old_pj_songs.master.diff
       ..bestPerfect = scoreData["perfect"]
       ..bestGreat = scoreData["great"];
     pj_song songInfo = pj_song()
