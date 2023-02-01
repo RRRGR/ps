@@ -29,8 +29,8 @@ class ShowListState extends ConsumerState<ShowList> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: IsarService().getPjMaster(),
+    return StreamBuilder<List<pj_song>>(
+      stream: IsarService().pjListen(),
       builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
         if (snapshot.hasData) {
           List songData = snapshot.data!;

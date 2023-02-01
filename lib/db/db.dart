@@ -10,6 +10,16 @@ class IsarService {
     db = openDB();
   }
 
+  Stream pjChanged() async* {
+    final isar = await db;
+    yield* isar.pj_songs.watchLazy();
+  }
+
+  Stream<List<pj_song>> pjListen() async* {
+    final isar = await db;
+    yield* isar.pj_songs.where().watch();
+  }
+
   Future<void> updatePjSong() async {
     final isar = await db;
     print(isar);
