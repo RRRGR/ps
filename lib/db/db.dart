@@ -26,13 +26,11 @@ class IsarService {
     } else if (sortSetting == "レベル") {
       List<pj_song> sortByLevelList = [];
       for (int i = 40; i > 1; i--) {
-        print(i);
         List<pj_song> newList = isar.pj_songs
             .filter()
             .master((q) => q.diffEqualTo(i))
             .findAllSync();
         sortByLevelList = [...sortByLevelList, ...newList];
-        print(sortByLevelList.length);
       }
       // yield* isar.pj_songs.where().watch();
       yield sortByLevelList;
