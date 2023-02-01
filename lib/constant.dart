@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SPClass {
@@ -13,3 +14,5 @@ class SPClass {
     return fontSize;
   }
 }
+
+final sortProvider = StateProvider<String>((ref) => '');

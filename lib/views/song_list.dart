@@ -30,14 +30,31 @@ class ShowListState extends ConsumerState<ShowList> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<pj_song>>(
-      stream: IsarService().pjListen(),
+      stream: IsarService().pjListen(ref),
       builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
         if (snapshot.hasData) {
           List songData = snapshot.data!;
           return Column(
             children: [
-              ElevatedButton(
-                  onPressed: _onPressed, child: const Text("Read Photo")),
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: _onPressed,
+                    child: const Text("Read Photo"),
+                  ),
+                  DropdownButton(
+                    value: ref.watch(sortProvider),
+                    items: ['', 'レベル', '曲名'].map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (value) =>
+                        ref.read(sortProvider.notifier).state = value!,
+                  ),
+                ],
+              ),
               Expanded(
                 child: SingleChildScrollView(
                   scrollDirection: Axis.vertical,

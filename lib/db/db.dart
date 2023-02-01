@@ -1,4 +1,5 @@
 import 'package:isar/isar.dart';
+import 'package:project_score/constant.dart';
 import 'package:project_score/db/pj_songs.dart';
 import 'package:project_score/model/load_json.dart';
 import 'package:string_similarity/string_similarity.dart';
@@ -15,9 +16,27 @@ class IsarService {
     yield* isar.pj_songs.watchLazy();
   }
 
-  Stream<List<pj_song>> pjListen() async* {
+  Stream<List<pj_song>> pjListen(ref) async* {
+    final sortSetting = ref.watch(sortProvider);
     final isar = await db;
-    yield* isar.pj_songs.where().watch();
+    if (sortSetting == "") {
+      yield* isar.pj_songs.where().watch();
+    } else if (sortSetting == "曲名") {
+      yield* isar.pj_songs.where().sortByName().watch();
+    } else if (sortSetting == "レベル") {
+      List<pj_song> sortByLevelList = [];
+      for (int i = 40; i > 1; i--) {
+        print(i);
+        List<pj_song> newList = isar.pj_songs
+            .filter()
+            .master((q) => q.diffEqualTo(i))
+            .findAllSync();
+        sortByLevelList = [...sortByLevelList, ...newList];
+        print(sortByLevelList.length);
+      }
+      // yield* isar.pj_songs.where().watch();
+      yield sortByLevelList;
+    }
   }
 
   Future<void> updatePjSong() async {
