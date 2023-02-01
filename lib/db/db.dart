@@ -78,7 +78,10 @@ class IsarService {
     final masterInfo = pj_diff_and_score()
       ..diff = old_pj_songs.master.diff
       ..bestPerfect = scoreData["perfect"]
-      ..bestGreat = scoreData["great"];
+      ..bestGreat = scoreData["great"]
+      ..bestGood = scoreData["good"]
+      ..bestBad = scoreData["bad"]
+      ..bestMiss = scoreData["miss"];
     pj_song songInfo = pj_song()
       ..id = old_pj_songs.id
       ..name = old_pj_songs.name

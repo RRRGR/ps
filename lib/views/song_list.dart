@@ -86,29 +86,30 @@ class SongDataTable extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    double width = MediaQuery.of(context).size.width;
     return DataTable(
+      columnSpacing: 8,
       columns: const [
         DataColumn(label: Text("曲名")),
         DataColumn(label: Text("難易度")),
         DataColumn(label: Text("レベル")),
-        DataColumn(label: Text("Perfect")),
-        DataColumn(label: Text("Great")),
+        DataColumn(label: Text("Best Score")),
       ],
       rows: songData
           .map((e) => DataRow(
                 cells: [
-                  DataCell(Text(
-                    e.name,
-                    // style: TextStyle(fontSize: 18),
+                  DataCell(SizedBox(
+                    width: width / 2.5,
+                    child: Text(
+                      e.name,
+                    ),
                   )),
                   const DataCell(Text("MAS")),
                   DataCell(Text(e.master.diff.toString())),
                   e.master.bestPerfect == null
                       ? const DataCell(Text("-"))
-                      : DataCell(Text(e.master.bestPerfect.toString())),
-                  e.master.bestGreat == null
-                      ? const DataCell(Text("-"))
-                      : DataCell(Text(e.master.bestGreat.toString())),
+                      : DataCell(Text(
+                          '${e.master.bestPerfect.toString()}-${e.master.bestGreat.toString()}-${e.master.bestGood.toString()}-${e.master.bestBad.toString()}-${e.master.bestMiss.toString()}-')),
                 ],
               ))
           .toList(),
