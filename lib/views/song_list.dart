@@ -19,13 +19,11 @@ class ShowList extends ConsumerStatefulWidget {
 class ShowListState extends ConsumerState<ShowList> {
   final TextRecognizer _textRecognizer =
       TextRecognizer(script: TextRecognitionScript.japanese);
-  // Isar db;
   @override
   void initState() {
     super.initState();
     Future(() async {
       await IsarService().updatePjSong();
-      // db = await IsarService().db;
     });
   }
 
@@ -128,17 +126,26 @@ class ShowListState extends ConsumerState<ShowList> {
 
   void _onPressed() async {
     final List<XFile> images = await ImagePicker().pickMultiImage();
+    if (images.isEmpty) return;
     for (XFile image in images) {
       dynamic path = image.path;
       if (path == null) {
         return;
       }
       final inputImage = InputImage.fromFilePath(path);
-      Map scoreInfo = await processImage(inputImage);
+      Map scoreInfo;
+      try {
+        scoreInfo = await processImage(inputImage);
+      } catch (e) {
+        print(e);
+        if (!mounted) return;
+        showDialog(context: context, builder: (_) => const ErrorAlert());
+        return;
+      }
       await IsarService().updateMaster(scoreInfo);
     }
     if (!mounted) return;
-    showDialog(context: context, builder: (_) => OKAlert());
+    showDialog(context: context, builder: (_) => const OKAlert());
   }
 }
 
@@ -183,9 +190,7 @@ class OKAlert extends ConsumerWidget {
   const OKAlert({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final sortSetting = ref.watch(sortProvider);
     return AlertDialog(
-      // title: const Text(''),
       content: const Text('スコアが読み取られました。'),
       actions: [
         TextButton(
@@ -194,9 +199,30 @@ class OKAlert extends ConsumerWidget {
             style: TextStyle(color: Colors.lightBlue),
           ),
           onPressed: () async {
+            ref.refresh(streamSongDataProvider);
             Navigator.pop(context);
-            ref.read(songDataProvider.notifier).state =
-                await IsarService().getPjScores(sortSetting);
+          },
+        )
+      ],
+    );
+  }
+}
+
+class ErrorAlert extends ConsumerWidget {
+  const ErrorAlert({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return AlertDialog(
+      content: const Text('スコアを読み込めない画像がありました。'),
+      actions: [
+        TextButton(
+          child: const Text(
+            'OK',
+            style: TextStyle(color: Colors.lightBlue),
+          ),
+          onPressed: () async {
+            ref.refresh(streamSongDataProvider);
+            Navigator.pop(context);
           },
         )
       ],
