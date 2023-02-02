@@ -16,7 +16,7 @@ class SPClass {
   }
 }
 
-final sortProvider = StateProvider<String>((ref) => 'default');
+final sortProvider = StateProvider<String>((ref) => 'デフォルト');
 final levelProvider = StateProvider<String>((ref) => 'Master');
 
 final streamSongDataProvider = StreamProvider((ref) async* {

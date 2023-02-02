@@ -30,8 +30,38 @@ class Home extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Face Detector App'),
+        actions: [
+          IconButton(
+            onPressed: () => showDialog(
+                context: context, builder: (_) => const ExplainAlert()),
+            icon: const Icon(Icons.question_mark),
+          )
+        ],
       ),
-      body: ShowList(),
+      body: const ShowList(),
+    );
+  }
+}
+
+class ExplainAlert extends ConsumerWidget {
+  const ExplainAlert({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return AlertDialog(
+      title: const Text("使い方"),
+      content: const Text(
+          '「読み込み」ボタンを押しプロセカのリザルトのスクショを選ぶことでスコアを保存できます。写真を上手く読み込めなかった場合は、曲名を長押しして手動でリザルトを入力することができます。'),
+      actions: [
+        TextButton(
+          child: const Text(
+            'OK',
+            style: TextStyle(color: Colors.lightBlue),
+          ),
+          onPressed: () async {
+            Navigator.pop(context);
+          },
+        )
+      ],
     );
   }
 }

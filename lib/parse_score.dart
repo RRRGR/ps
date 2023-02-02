@@ -27,7 +27,7 @@ Map parseScore(RecognizedText recognizedText) {
   print(songScore);
   Map scoreInfo = {
     "name": songName,
-    "diffName": songDiff,
+    "diff": songDiff,
     "highScore": songScore,
     "perfect": int.parse(perfect),
     "great": int.parse(great),

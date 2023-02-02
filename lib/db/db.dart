@@ -108,8 +108,9 @@ class IsarService {
     }
   }
 
-  Future<void> updateMaster(Map scoreData) async {
+  Future<void> updateScore(Map scoreData) async {
     final isar = await db;
+    pj_song songInfo;
     List result =
         await isar.pj_songs.filter().nameContains(scoreData["name"]).findAll();
     if (result.isEmpty) {
@@ -126,21 +127,193 @@ class IsarService {
           .findAll();
     }
     final old_pj_songs = result[0];
-    final masterInfo = pj_diff_and_score()
-      ..diff = old_pj_songs.master.diff
-      ..bestPerfect = scoreData["perfect"]
-      ..bestGreat = scoreData["great"]
-      ..bestGood = scoreData["good"]
-      ..bestBad = scoreData["bad"]
-      ..bestMiss = scoreData["miss"];
-    pj_song songInfo = pj_song()
-      ..id = old_pj_songs.id
-      ..name = old_pj_songs.name
-      ..easy = old_pj_songs.easy
-      ..normal = old_pj_songs.normal
-      ..hard = old_pj_songs.hard
-      ..expert = old_pj_songs.expert
-      ..master = masterInfo;
+    if (scoreData['diff'] == 'Master') {
+      final masterInfo = pj_diff_and_score()
+        ..diff = old_pj_songs.master.diff
+        ..bestPerfect = scoreData["perfect"]
+        ..bestGreat = scoreData["great"]
+        ..bestGood = scoreData["good"]
+        ..bestBad = scoreData["bad"]
+        ..bestMiss = scoreData["miss"];
+      songInfo = pj_song()
+        ..id = old_pj_songs.id
+        ..name = old_pj_songs.name
+        ..easy = old_pj_songs.easy
+        ..normal = old_pj_songs.normal
+        ..hard = old_pj_songs.hard
+        ..expert = old_pj_songs.expert
+        ..master = masterInfo;
+    } else if (scoreData['diff'] == 'Expert') {
+      final expertInfo = pj_diff_and_score()
+        ..diff = old_pj_songs.expert.diff
+        ..bestPerfect = scoreData["perfect"]
+        ..bestGreat = scoreData["great"]
+        ..bestGood = scoreData["good"]
+        ..bestBad = scoreData["bad"]
+        ..bestMiss = scoreData["miss"];
+      songInfo = pj_song()
+        ..id = old_pj_songs.id
+        ..name = old_pj_songs.name
+        ..easy = old_pj_songs.easy
+        ..normal = old_pj_songs.normal
+        ..hard = old_pj_songs.hard
+        ..expert = expertInfo
+        ..master = old_pj_songs.master;
+    } else if (scoreData['diff'] == 'Hard') {
+      final hardInfo = pj_diff_and_score()
+        ..diff = old_pj_songs.hard.diff
+        ..bestPerfect = scoreData["perfect"]
+        ..bestGreat = scoreData["great"]
+        ..bestGood = scoreData["good"]
+        ..bestBad = scoreData["bad"]
+        ..bestMiss = scoreData["miss"];
+      songInfo = pj_song()
+        ..id = old_pj_songs.id
+        ..name = old_pj_songs.name
+        ..easy = old_pj_songs.easy
+        ..normal = old_pj_songs.normal
+        ..hard = hardInfo
+        ..expert = old_pj_songs.expert
+        ..master = old_pj_songs.master;
+    } else if (scoreData['diff'] == 'Normal') {
+      final normalInfo = pj_diff_and_score()
+        ..diff = old_pj_songs.normal.diff
+        ..bestPerfect = scoreData["perfect"]
+        ..bestGreat = scoreData["great"]
+        ..bestGood = scoreData["good"]
+        ..bestBad = scoreData["bad"]
+        ..bestMiss = scoreData["miss"];
+      songInfo = pj_song()
+        ..id = old_pj_songs.id
+        ..name = old_pj_songs.name
+        ..easy = old_pj_songs.easy
+        ..normal = normalInfo
+        ..hard = old_pj_songs.hard
+        ..expert = old_pj_songs.expert
+        ..master = old_pj_songs.master;
+    } else {
+      final easyInfo = pj_diff_and_score()
+        ..diff = old_pj_songs.easy.diff
+        ..bestPerfect = scoreData["perfect"]
+        ..bestGreat = scoreData["great"]
+        ..bestGood = scoreData["good"]
+        ..bestBad = scoreData["bad"]
+        ..bestMiss = scoreData["miss"];
+      songInfo = pj_song()
+        ..id = old_pj_songs.id
+        ..name = old_pj_songs.name
+        ..easy = easyInfo
+        ..normal = old_pj_songs.normal
+        ..hard = old_pj_songs.hard
+        ..expert = old_pj_songs.expert
+        ..master = old_pj_songs.master;
+    }
+    await isar.writeTxn(() async => await isar.pj_songs.put(songInfo));
+  }
+
+  Future<void> updateFromForm(Map scoreMap) async {
+    final isar = await db;
+    pj_song songInfo;
+    List result = await isar.pj_songs
+        .filter()
+        .nameContains(scoreMap['songName'])
+        .findAll();
+    // if (result.isEmpty) {
+    //   List allSongInfo = isar.pj_songs.where().findAllSync();
+    //   List<String> allSongName =
+    //   List.generate(allSongInfo.length, (index) => allSongInfo[index].name);
+    //   BestMatch bestMatch =
+    //   StringSimilarity.findBestMatch(scoreData["name"], allSongName);
+    //   print(bestMatch.bestMatch.target);
+    //   scoreData["name"] = bestMatch.bestMatch.target;
+    //   result = await isar.pj_songs
+    //       .filter()
+    //       .nameContains(scoreData["name"])
+    //       .findAll();
+    // }
+    final old_pj_songs = result[0];
+    if (scoreMap['diff'] == 'Master') {
+      final masterInfo = pj_diff_and_score()
+        ..diff = old_pj_songs.master.diff
+        ..bestPerfect = scoreMap["perfect"]
+        ..bestGreat = scoreMap["great"]
+        ..bestGood = scoreMap["good"]
+        ..bestBad = scoreMap["bad"]
+        ..bestMiss = scoreMap["miss"];
+      songInfo = pj_song()
+        ..id = old_pj_songs.id
+        ..name = old_pj_songs.name
+        ..easy = old_pj_songs.easy
+        ..normal = old_pj_songs.normal
+        ..hard = old_pj_songs.hard
+        ..expert = old_pj_songs.expert
+        ..master = masterInfo;
+    } else if (scoreMap['diff'] == 'Expert') {
+      print(1);
+      final expertInfo = pj_diff_and_score()
+        ..diff = old_pj_songs.expert.diff
+        ..bestPerfect = scoreMap["perfect"]
+        ..bestGreat = scoreMap["great"]
+        ..bestGood = scoreMap["good"]
+        ..bestBad = scoreMap["bad"]
+        ..bestMiss = scoreMap["miss"];
+      songInfo = pj_song()
+        ..id = old_pj_songs.id
+        ..name = old_pj_songs.name
+        ..easy = old_pj_songs.easy
+        ..normal = old_pj_songs.normal
+        ..hard = old_pj_songs.hard
+        ..expert = expertInfo
+        ..master = old_pj_songs.master;
+    } else if (scoreMap['diff'] == 'Hard') {
+      final hardInfo = pj_diff_and_score()
+        ..diff = old_pj_songs.hard.diff
+        ..bestPerfect = scoreMap["perfect"]
+        ..bestGreat = scoreMap["great"]
+        ..bestGood = scoreMap["good"]
+        ..bestBad = scoreMap["bad"]
+        ..bestMiss = scoreMap["miss"];
+      songInfo = pj_song()
+        ..id = old_pj_songs.id
+        ..name = old_pj_songs.name
+        ..easy = old_pj_songs.easy
+        ..normal = old_pj_songs.normal
+        ..hard = hardInfo
+        ..expert = old_pj_songs.expert
+        ..master = old_pj_songs.master;
+    } else if (scoreMap['diff'] == 'Normal') {
+      final normalInfo = pj_diff_and_score()
+        ..diff = old_pj_songs.normal.diff
+        ..bestPerfect = scoreMap["perfect"]
+        ..bestGreat = scoreMap["great"]
+        ..bestGood = scoreMap["good"]
+        ..bestBad = scoreMap["bad"]
+        ..bestMiss = scoreMap["miss"];
+      songInfo = pj_song()
+        ..id = old_pj_songs.id
+        ..name = old_pj_songs.name
+        ..easy = old_pj_songs.easy
+        ..normal = normalInfo
+        ..hard = old_pj_songs.hard
+        ..expert = old_pj_songs.expert
+        ..master = old_pj_songs.master;
+    } else {
+      final easyInfo = pj_diff_and_score()
+        ..diff = old_pj_songs.easy.diff
+        ..bestPerfect = scoreMap["perfect"]
+        ..bestGreat = scoreMap["great"]
+        ..bestGood = scoreMap["good"]
+        ..bestBad = scoreMap["bad"]
+        ..bestMiss = scoreMap["miss"];
+      songInfo = pj_song()
+        ..id = old_pj_songs.id
+        ..name = old_pj_songs.name
+        ..easy = easyInfo
+        ..normal = old_pj_songs.normal
+        ..hard = old_pj_songs.hard
+        ..expert = old_pj_songs.expert
+        ..master = old_pj_songs.master;
+    }
     await isar.writeTxn(() async => await isar.pj_songs.put(songInfo));
   }
 

@@ -5,10 +5,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:project_score/constant.dart';
 import 'package:project_score/db/db.dart';
 import 'package:project_score/db/pj_songs.dart';
-import 'package:project_score/model/load_json.dart';
 import 'package:project_score/parse_score.dart';
-import 'package:isar/isar.dart';
-import 'package:project_score/db/pj_songs.dart';
+import 'package:flutter/services.dart';
 
 class ShowList extends ConsumerStatefulWidget {
   const ShowList({super.key});
@@ -42,12 +40,12 @@ class ShowListState extends ConsumerState<ShowList> {
               children: [
                 ElevatedButton(
                   onPressed: _onPressed,
-                  child: const Text("Read Photo"),
+                  child: const Text("読み込み"),
                 ),
                 const Text("ソート:"),
                 DropdownButton(
                     value: sortSetting,
-                    items: ['default', 'レベル', '曲名'].map((String value) {
+                    items: ['デフォルト', 'レベル', '曲名'].map((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(value),
@@ -58,7 +56,7 @@ class ShowListState extends ConsumerState<ShowList> {
                       ref.refresh(streamSongDataProvider);
                     }),
                 DropdownButton(
-                    value: sortSetting,
+                    value: levelSetting,
                     items: ['Easy', 'Normal', 'Hard', 'Expert', 'Master']
                         .map((String value) {
                       return DropdownMenuItem<String>(
@@ -115,7 +113,7 @@ class ShowListState extends ConsumerState<ShowList> {
         showDialog(context: context, builder: (_) => const ErrorAlert());
         return;
       }
-      await IsarService().updateMaster(scoreInfo);
+      await IsarService().updateScore(scoreInfo);
     }
     if (!mounted) return;
     showDialog(context: context, builder: (_) => const OKAlert());
@@ -140,6 +138,8 @@ class SongDataTable extends ConsumerWidget {
       ],
       rows: songData
           .map((e) => DataRow(
+                onLongPress: () => showDialog(
+                    context: context, builder: (_) => EditScoreAlert(e)),
                 cells: [
                   DataCell(SizedBox(
                     width: width / 2.5,
@@ -149,9 +149,7 @@ class SongDataTable extends ConsumerWidget {
                   )),
                   DataCell(Text(levelSetting)),
                   DataCell(DiffText(e)),
-                  e.master.bestPerfect == null
-                      ? const DataCell(Text("-"))
-                      : DataCell(ScoreText(e)),
+                  DataCell(ScoreText(e)),
                 ],
               ))
           .toList(),
@@ -233,21 +231,161 @@ class ScoreText extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final diff = ref.watch(levelProvider);
+    print("scoretext $diff");
     if (diff == "Master") {
-      return Text(
-          '${e.master.bestPerfect.toString()}-${e.master.bestGreat.toString()}-${e.master.bestGood.toString()}-${e.master.bestBad.toString()}-${e.master.bestMiss.toString()}');
+      if (e.master.bestPerfect == null) {
+        return const Text("-");
+      } else {
+        return Text(
+            '${e.master.bestPerfect.toString()}-${e.master.bestGreat.toString()}-${e.master.bestGood.toString()}-${e.master.bestBad.toString()}-${e.master.bestMiss.toString()}');
+      }
     } else if (diff == "Expert") {
-      return Text(
-          '${e.expert.bestPerfect.toString()}-${e.expert.bestGreat.toString()}-${e.expert.bestGood.toString()}-${e.expert.bestBad.toString()}-${e.expert.bestMiss.toString()}');
+      if (e.expert.bestPerfect == null) {
+        return const Text("-");
+      } else {
+        return Text(
+            '${e.expert.bestPerfect.toString()}-${e.expert.bestGreat.toString()}-${e.expert.bestGood.toString()}-${e.expert.bestBad.toString()}-${e.expert.bestMiss.toString()}');
+      }
     } else if (diff == "Hard") {
-      return Text(
-          '${e.hard.bestPerfect.toString()}-${e.hard.bestGreat.toString()}-${e.hard.bestGood.toString()}-${e.hard.bestBad.toString()}-${e.hard.bestMiss.toString()}');
+      if (e.hard.bestPerfect == null) {
+        return const Text("-");
+      } else {
+        return Text(
+            '${e.hard.bestPerfect.toString()}-${e.hard.bestGreat.toString()}-${e.hard.bestGood.toString()}-${e.hard.bestBad.toString()}-${e.hard.bestMiss.toString()}');
+      }
     } else if (diff == "Normal") {
-      return Text(
-          '${e.normal.bestPerfect.toString()}-${e.normal.bestGreat.toString()}-${e.normal.bestGood.toString()}-${e.normal.bestBad.toString()}-${e.normal.bestMiss.toString()}');
+      if (e.normal.bestPerfect == null) {
+        return const Text("-");
+      } else {
+        return Text(
+            '${e.normal.bestPerfect.toString()}-${e.normal.bestGreat.toString()}-${e.normal.bestGood.toString()}-${e.normal.bestBad.toString()}-${e.normal.bestMiss.toString()}');
+      }
     } else {
-      return Text(
-          '${e.easy.bestPerfect.toString()}-${e.easy.bestGreat.toString()}-${e.easy.bestGood.toString()}-${e.easy.bestBad.toString()}-${e.easy.bestMiss.toString()}');
+      if (e.easy.bestPerfect == null) {
+        return const Text("-");
+      } else {
+        return Text(
+            '${e.easy.bestPerfect.toString()}-${e.easy.bestGreat.toString()}-${e.easy.bestGood.toString()}-${e.easy.bestBad.toString()}-${e.easy.bestMiss.toString()}');
+      }
     }
+  }
+}
+
+class NameAndDiffText extends ConsumerWidget {
+  final pj_song e;
+  const NameAndDiffText(this.e, {super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final diff = ref.watch(levelProvider);
+    if (diff == "Master") {
+      return Text("${e.name} ${e.master.diff}");
+    } else if (diff == "Expert") {
+      return Text("${e.name} ${e.expert.diff}");
+    } else if (diff == "Hard") {
+      return Text("${e.name} ${e.hard.diff}");
+    } else if (diff == "Normal") {
+      return Text("${e.name} ${e.normal.diff}");
+    } else {
+      return Text("${e.name} ${e.easy.diff}");
+    }
+  }
+}
+
+class EditScoreAlert extends ConsumerWidget {
+  final pj_song e;
+  EditScoreAlert(this.e, {super.key});
+  Map scoreMap = {
+    'songName': '',
+    'diff': '',
+    'perfect': 0,
+    'great': 0,
+    'good': 0,
+    'bad': 0,
+    'miss': 0
+  };
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+    final diff = ref.watch(levelProvider);
+    return AlertDialog(
+      title: NameAndDiffText(e),
+      content: SizedBox(
+        height: width / 2.5,
+        width: height / 2.5,
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            TextField(
+              maxLength: 4,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Perfect',
+              ),
+              onChanged: (value) => scoreMap['perfect'] = int.parse(value),
+            ),
+            TextField(
+              maxLength: 4,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Great',
+              ),
+              onChanged: (value) => scoreMap['great'] = int.parse(value),
+            ),
+            TextField(
+              maxLength: 4,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Good',
+              ),
+              onChanged: (value) => scoreMap['good'] = int.parse(value),
+            ),
+            TextField(
+              maxLength: 4,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Bad',
+              ),
+              onChanged: (value) => scoreMap['bad'] = int.parse(value),
+            ),
+            TextField(
+              maxLength: 4,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Miss',
+              ),
+              onChanged: (value) => scoreMap['miss'] = int.parse(value),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          child: const Text(
+            'スコアを更新',
+            style: TextStyle(color: Colors.lightBlue),
+          ),
+          onPressed: () async {
+            scoreMap['songName'] = e.name;
+            scoreMap['diff'] = diff;
+            print(scoreMap);
+            await IsarService().updateFromForm(scoreMap);
+            ref.refresh(streamSongDataProvider);
+            Navigator.pop(context);
+          },
+        )
+      ],
+    );
   }
 }
