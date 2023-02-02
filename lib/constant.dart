@@ -21,3 +21,7 @@ final songDataProvider = StateProvider<List>((ref) => []);
 
 final futureSongDataProvider = FutureProvider(
     (ref) async => await IsarService().getPjScores(ref.read(sortProvider)));
+
+final streamSongDataProvider = StreamProvider((ref) async* {
+  yield await IsarService().getPjScores(ref.read(sortProvider));
+});

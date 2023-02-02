@@ -32,22 +32,20 @@ class ShowListState extends ConsumerState<ShowList> {
   @override
   Widget build(BuildContext context) {
     final sortSetting = ref.watch(sortProvider);
-    final songDataProv = ref.watch(futureSongDataProvider);
-    return FutureBuilder(
-      future: IsarService().getPjScores(sortSetting),
-      builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
-        if (snapshot.hasData) {
-          print(snapshot.data);
-          List songData = snapshot.data!;
-          return Column(
-            children: [
-              Row(
-                children: [
-                  ElevatedButton(
-                    onPressed: _onPressed,
-                    child: const Text("Read Photo"),
-                  ),
-                  DropdownButton(
+    AsyncValue songDataProv = ref.watch(streamSongDataProvider);
+    return songDataProv.when(
+      loading: () => const CircularProgressIndicator(),
+      error: (err, stack) => Text('Error: $err'),
+      data: (songData) {
+        return Column(
+          children: [
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: _onPressed,
+                  child: const Text("Read Photo"),
+                ),
+                DropdownButton(
                     value: sortSetting,
                     items: ['default', 'レベル', '曲名'].map((String value) {
                       return DropdownMenuItem<String>(
@@ -55,26 +53,66 @@ class ShowListState extends ConsumerState<ShowList> {
                         child: Text(value),
                       );
                     }).toList(),
-                    onChanged: (value) =>
-                        ref.read(sortProvider.notifier).state = value!,
-                  ),
-                ],
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: FittedBox(
-                    child: SongDataTable(songData),
-                  ),
+                    onChanged: (value) {
+                      ref.read(sortProvider.notifier).state = value!;
+                      ref.refresh(streamSongDataProvider);
+                    }),
+              ],
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: FittedBox(
+                  child: SongDataTable(songData),
                 ),
               ),
-            ],
-          );
-        } else {
-          return const CircularProgressIndicator();
-        }
+            ),
+          ],
+        );
       },
     );
+    // return FutureBuilder(
+    //   future: IsarService().getPjScores(sortSetting),
+    //   builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
+    //     if (snapshot.hasData) {
+    //       print(snapshot.data);
+    //       List songData = snapshot.data!;
+    //       return Column(
+    //         children: [
+    //           Row(
+    //             children: [
+    //               ElevatedButton(
+    //                 onPressed: _onPressed,
+    //                 child: const Text("Read Photo"),
+    //               ),
+    //               DropdownButton(
+    //                 value: sortSetting,
+    //                 items: ['default', 'レベル', '曲名'].map((String value) {
+    //                   return DropdownMenuItem<String>(
+    //                     value: value,
+    //                     child: Text(value),
+    //                   );
+    //                 }).toList(),
+    //                 onChanged: (value) =>
+    //                     ref.read(sortProvider.notifier).state = value!,
+    //               ),
+    //             ],
+    //           ),
+    //           Expanded(
+    //             child: SingleChildScrollView(
+    //               scrollDirection: Axis.vertical,
+    //               child: FittedBox(
+    //                 child: SongDataTable(songData),
+    //               ),
+    //             ),
+    //           ),
+    //         ],
+    //       );
+    //     } else {
+    //       return const CircularProgressIndicator();
+    //     }
+    //   },
+    // );
   }
 
   Future processImage(InputImage inputImage) async {
