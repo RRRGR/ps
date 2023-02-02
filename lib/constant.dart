@@ -17,10 +17,7 @@ class SPClass {
 }
 
 final sortProvider = StateProvider<String>((ref) => 'default');
-final songDataProvider = StateProvider<List>((ref) => []);
-
-final futureSongDataProvider = FutureProvider(
-    (ref) async => await IsarService().getPjScores(ref.read(sortProvider)));
+final levelProvider = StateProvider<String>((ref) => 'Master');
 
 final streamSongDataProvider = StreamProvider((ref) async* {
   yield await IsarService().getPjScores(ref.read(sortProvider));

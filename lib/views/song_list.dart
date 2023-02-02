@@ -30,6 +30,7 @@ class ShowListState extends ConsumerState<ShowList> {
   @override
   Widget build(BuildContext context) {
     final sortSetting = ref.watch(sortProvider);
+    final levelSetting = ref.watch(levelProvider);
     AsyncValue songDataProv = ref.watch(streamSongDataProvider);
     return songDataProv.when(
       loading: () => const CircularProgressIndicator(),
@@ -43,6 +44,7 @@ class ShowListState extends ConsumerState<ShowList> {
                   onPressed: _onPressed,
                   child: const Text("Read Photo"),
                 ),
+                const Text("ソート:"),
                 DropdownButton(
                     value: sortSetting,
                     items: ['default', 'レベル', '曲名'].map((String value) {
@@ -53,6 +55,19 @@ class ShowListState extends ConsumerState<ShowList> {
                     }).toList(),
                     onChanged: (value) {
                       ref.read(sortProvider.notifier).state = value!;
+                      ref.refresh(streamSongDataProvider);
+                    }),
+                DropdownButton(
+                    value: sortSetting,
+                    items: ['Easy', 'Normal', 'Hard', 'Expert', 'Master']
+                        .map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      ref.read(levelProvider.notifier).state = value!;
                       ref.refresh(streamSongDataProvider);
                     }),
               ],
@@ -69,48 +84,6 @@ class ShowListState extends ConsumerState<ShowList> {
         );
       },
     );
-    // return FutureBuilder(
-    //   future: IsarService().getPjScores(sortSetting),
-    //   builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
-    //     if (snapshot.hasData) {
-    //       print(snapshot.data);
-    //       List songData = snapshot.data!;
-    //       return Column(
-    //         children: [
-    //           Row(
-    //             children: [
-    //               ElevatedButton(
-    //                 onPressed: _onPressed,
-    //                 child: const Text("Read Photo"),
-    //               ),
-    //               DropdownButton(
-    //                 value: sortSetting,
-    //                 items: ['default', 'レベル', '曲名'].map((String value) {
-    //                   return DropdownMenuItem<String>(
-    //                     value: value,
-    //                     child: Text(value),
-    //                   );
-    //                 }).toList(),
-    //                 onChanged: (value) =>
-    //                     ref.read(sortProvider.notifier).state = value!,
-    //               ),
-    //             ],
-    //           ),
-    //           Expanded(
-    //             child: SingleChildScrollView(
-    //               scrollDirection: Axis.vertical,
-    //               child: FittedBox(
-    //                 child: SongDataTable(songData),
-    //               ),
-    //             ),
-    //           ),
-    //         ],
-    //       );
-    //     } else {
-    //       return const CircularProgressIndicator();
-    //     }
-    //   },
-    // );
   }
 
   Future processImage(InputImage inputImage) async {
@@ -155,6 +128,7 @@ class SongDataTable extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final levelSetting = ref.watch(levelProvider);
     double width = MediaQuery.of(context).size.width;
     return DataTable(
       columnSpacing: 8,
@@ -173,12 +147,11 @@ class SongDataTable extends ConsumerWidget {
                       e.name,
                     ),
                   )),
-                  const DataCell(Text("MAS")),
-                  DataCell(Text(e.master.diff.toString())),
+                  DataCell(Text(levelSetting)),
+                  DataCell(DiffText(e)),
                   e.master.bestPerfect == null
                       ? const DataCell(Text("-"))
-                      : DataCell(Text(
-                          '${e.master.bestPerfect.toString()}-${e.master.bestGreat.toString()}-${e.master.bestGood.toString()}-${e.master.bestBad.toString()}-${e.master.bestMiss.toString()}')),
+                      : DataCell(ScoreText(e)),
                 ],
               ))
           .toList(),
@@ -227,5 +200,54 @@ class ErrorAlert extends ConsumerWidget {
         )
       ],
     );
+  }
+}
+
+class DiffText extends ConsumerWidget {
+  final pj_song e;
+
+  const DiffText(this.e, {super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final diff = ref.watch(levelProvider);
+    if (diff == "Master") {
+      return Text(e.master.diff.toString());
+    } else if (diff == "Expert") {
+      return Text(e.expert.diff.toString());
+    } else if (diff == "Hard") {
+      return Text(e.hard.diff.toString());
+    } else if (diff == "Normal") {
+      return Text(e.normal.diff.toString());
+    } else {
+      return Text(e.easy.diff.toString());
+    }
+  }
+}
+
+class ScoreText extends ConsumerWidget {
+  final pj_song e;
+
+  const ScoreText(this.e, {super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final diff = ref.watch(levelProvider);
+    if (diff == "Master") {
+      return Text(
+          '${e.master.bestPerfect.toString()}-${e.master.bestGreat.toString()}-${e.master.bestGood.toString()}-${e.master.bestBad.toString()}-${e.master.bestMiss.toString()}');
+    } else if (diff == "Expert") {
+      return Text(
+          '${e.expert.bestPerfect.toString()}-${e.expert.bestGreat.toString()}-${e.expert.bestGood.toString()}-${e.expert.bestBad.toString()}-${e.expert.bestMiss.toString()}');
+    } else if (diff == "Hard") {
+      return Text(
+          '${e.hard.bestPerfect.toString()}-${e.hard.bestGreat.toString()}-${e.hard.bestGood.toString()}-${e.hard.bestBad.toString()}-${e.hard.bestMiss.toString()}');
+    } else if (diff == "Normal") {
+      return Text(
+          '${e.normal.bestPerfect.toString()}-${e.normal.bestGreat.toString()}-${e.normal.bestGood.toString()}-${e.normal.bestBad.toString()}-${e.normal.bestMiss.toString()}');
+    } else {
+      return Text(
+          '${e.easy.bestPerfect.toString()}-${e.easy.bestGreat.toString()}-${e.easy.bestGood.toString()}-${e.easy.bestBad.toString()}-${e.easy.bestMiss.toString()}');
+    }
   }
 }
