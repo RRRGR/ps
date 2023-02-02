@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project_score/db/db.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SPClass {
@@ -15,4 +16,8 @@ class SPClass {
   }
 }
 
-final sortProvider = StateProvider<String>((ref) => '');
+final sortProvider = StateProvider<String>((ref) => 'default');
+final songDataProvider = StateProvider<List>((ref) => []);
+
+final futureSongDataProvider = FutureProvider(
+    (ref) async => await IsarService().getPjScores(ref.read(sortProvider)));

@@ -19,20 +19,25 @@ class ShowList extends ConsumerStatefulWidget {
 class ShowListState extends ConsumerState<ShowList> {
   final TextRecognizer _textRecognizer =
       TextRecognizer(script: TextRecognitionScript.japanese);
+  // Isar db;
   @override
   void initState() {
     super.initState();
     Future(() async {
       await IsarService().updatePjSong();
+      // db = await IsarService().db;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<pj_song>>(
-      stream: IsarService().pjListen(ref),
+    final sortSetting = ref.watch(sortProvider);
+    final songDataProv = ref.watch(futureSongDataProvider);
+    return FutureBuilder(
+      future: IsarService().getPjScores(sortSetting),
       builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
         if (snapshot.hasData) {
+          print(snapshot.data);
           List songData = snapshot.data!;
           return Column(
             children: [
@@ -43,8 +48,8 @@ class ShowListState extends ConsumerState<ShowList> {
                     child: const Text("Read Photo"),
                   ),
                   DropdownButton(
-                    value: ref.watch(sortProvider),
-                    items: ['', 'レベル', '曲名'].map((String value) {
+                    value: sortSetting,
+                    items: ['default', 'レベル', '曲名'].map((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(value),
@@ -94,6 +99,8 @@ class ShowListState extends ConsumerState<ShowList> {
       Map scoreInfo = await processImage(inputImage);
       await IsarService().updateMaster(scoreInfo);
     }
+    if (!mounted) return;
+    showDialog(context: context, builder: (_) => OKAlert());
   }
 }
 
@@ -126,10 +133,35 @@ class SongDataTable extends ConsumerWidget {
                   e.master.bestPerfect == null
                       ? const DataCell(Text("-"))
                       : DataCell(Text(
-                          '${e.master.bestPerfect.toString()}-${e.master.bestGreat.toString()}-${e.master.bestGood.toString()}-${e.master.bestBad.toString()}-${e.master.bestMiss.toString()}-')),
+                          '${e.master.bestPerfect.toString()}-${e.master.bestGreat.toString()}-${e.master.bestGood.toString()}-${e.master.bestBad.toString()}-${e.master.bestMiss.toString()}')),
                 ],
               ))
           .toList(),
+    );
+  }
+}
+
+class OKAlert extends ConsumerWidget {
+  const OKAlert({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final sortSetting = ref.watch(sortProvider);
+    return AlertDialog(
+      // title: const Text(''),
+      content: const Text('スコアが読み取られました。'),
+      actions: [
+        TextButton(
+          child: const Text(
+            'OK',
+            style: TextStyle(color: Colors.lightBlue),
+          ),
+          onPressed: () async {
+            Navigator.pop(context);
+            ref.read(songDataProvider.notifier).state =
+                await IsarService().getPjScores(sortSetting);
+          },
+        )
+      ],
     );
   }
 }

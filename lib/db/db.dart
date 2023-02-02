@@ -16,10 +16,9 @@ class IsarService {
     yield* isar.pj_songs.watchLazy();
   }
 
-  Stream<List<pj_song>> pjListen(ref) async* {
-    final sortSetting = ref.watch(sortProvider);
+  Stream<List<pj_song>> pjListen(String sortSetting) async* {
     final isar = await db;
-    if (sortSetting == "") {
+    if (sortSetting == "default") {
       yield* isar.pj_songs.where().watch();
     } else if (sortSetting == "曲名") {
       yield* isar.pj_songs.where().sortByName().watch();
@@ -35,6 +34,31 @@ class IsarService {
       // yield* isar.pj_songs.where().watch();
       yield sortByLevelList;
     }
+  }
+
+  Stream<List<pj_song>> pjDefaultListen() async* {
+    final isar = await db;
+    print(1);
+    yield* isar.pj_songs.where().watch();
+  }
+
+  Stream<List<pj_song>> pjNameListen() async* {
+    final isar = await db;
+    print(2);
+    yield* isar.pj_songs.where().sortByName().watch();
+  }
+
+  Stream<List<pj_song>> pjLevelListen() async* {
+    final isar = await db;
+    List<pj_song> sortByLevelList = [];
+    for (int i = 40; i > 1; i--) {
+      List<pj_song> newList =
+          isar.pj_songs.filter().master((q) => q.diffEqualTo(i)).findAllSync();
+      sortByLevelList = [...sortByLevelList, ...newList];
+    }
+    // yield* isar.pj_songs.where().watch();
+    yield sortByLevelList;
+    yield* pjLevelListen();
   }
 
   Future<void> updatePjSong() async {
@@ -123,6 +147,25 @@ class IsarService {
   Future<List> getPjMaster() async {
     final isar = await db;
     List result = await isar.pj_songs.where().findAll();
+    return result;
+  }
+
+  Future<List> getPjScores(String sortSetting) async {
+    final isar = await db;
+    List result = [];
+    if (sortSetting == "default") {
+      result = await isar.pj_songs.where().findAll();
+    } else if (sortSetting == "曲名") {
+      result = await isar.pj_songs.where().sortByName().findAll();
+    } else {
+      for (int i = 40; i > 1; i--) {
+        List<pj_song> newList = isar.pj_songs
+            .filter()
+            .master((q) => q.diffEqualTo(i))
+            .findAllSync();
+        result = [...result, ...newList];
+      }
+    }
     return result;
   }
 
