@@ -5,7 +5,9 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-    <string>カメラを使う理由・用途を記述</string>
+    <string>Read Results</string>
+    <key>GADApplicationIdentifier</key>
+    <string>ca-app-pub-6158094967834458~5662143763</string>
 	<key>CFBundleDisplayName</key>
 	<string>Project Score</string>
 	<key>CFBundleExecutable</key>

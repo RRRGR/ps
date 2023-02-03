@@ -1,9 +1,14 @@
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:string_similarity/string_similarity.dart';
 
 Map parseScore(RecognizedText recognizedText) {
   List<String> textList = recognizedText.text.split('\n');
   String songName = textList[0];
   String songDiff = textList[1];
+  BestMatch bestMatch = StringSimilarity.findBestMatch(
+      songDiff, ["EASY", "NORMAL", "HARD", "EXPERT", "MASTER"]);
+  print(bestMatch.bestMatch.target);
+  songDiff = bestMatch.bestMatch.target!;
   String songScore = "";
   String perfect = "";
   String great = "";

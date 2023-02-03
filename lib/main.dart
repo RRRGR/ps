@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:project_score/db/pj_songs.dart';
 import 'package:project_score/views/song_list.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'face_detector_view.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
   runApp(
     const ProviderScope(
       child: MyApp(),
@@ -29,7 +30,7 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Face Detector App'),
+        title: const Text('Project Score'),
         actions: [
           IconButton(
             onPressed: () => showDialog(
@@ -50,7 +51,7 @@ class ExplainAlert extends ConsumerWidget {
     return AlertDialog(
       title: const Text("使い方"),
       content: const Text(
-          '「読み込み」ボタンを押しプロセカのリザルトのスクショを選ぶことでスコアを保存できます。写真を上手く読み込めなかった場合は、曲名を長押しして手動でリザルトを入力することができます。'),
+          '「読み込み」ボタンを押し、プロセカのリザルトのスクショを一枚以上選ぶことでスコアを保存できます。写真を上手く読み込めなかった場合は、曲名を長押しして手動でリザルトを入力することができます。'),
       actions: [
         TextButton(
           child: const Text(

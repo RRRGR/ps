@@ -1,5 +1,4 @@
 import 'package:isar/isar.dart';
-import 'package:project_score/constant.dart';
 import 'package:project_score/db/pj_songs.dart';
 import 'package:project_score/model/load_json.dart';
 import 'package:string_similarity/string_similarity.dart';
@@ -18,7 +17,7 @@ class IsarService {
 
   Stream<List<pj_song>> pjListen(String sortSetting) async* {
     final isar = await db;
-    if (sortSetting == "default") {
+    if (sortSetting == "デフォルト") {
       yield* isar.pj_songs.where().watch();
     } else if (sortSetting == "曲名") {
       yield* isar.pj_songs.where().sortByName().watch();
@@ -38,13 +37,11 @@ class IsarService {
 
   Stream<List<pj_song>> pjDefaultListen() async* {
     final isar = await db;
-    print(1);
     yield* isar.pj_songs.where().watch();
   }
 
   Stream<List<pj_song>> pjNameListen() async* {
     final isar = await db;
-    print(2);
     yield* isar.pj_songs.where().sortByName().watch();
   }
 
@@ -63,7 +60,6 @@ class IsarService {
 
   Future<void> updatePjSong() async {
     final isar = await db;
-    print(isar);
     List songsList = await loadLocalJson();
     String songName = "";
     int eDiff = 0;
@@ -119,7 +115,6 @@ class IsarService {
           List.generate(allSongInfo.length, (index) => allSongInfo[index].name);
       BestMatch bestMatch =
           StringSimilarity.findBestMatch(scoreData["name"], allSongName);
-      print(bestMatch.bestMatch.target);
       scoreData["name"] = bestMatch.bestMatch.target;
       result = await isar.pj_songs
           .filter()
@@ -127,7 +122,8 @@ class IsarService {
           .findAll();
     }
     final old_pj_songs = result[0];
-    if (scoreData['diff'] == 'Master') {
+    if (scoreData['diff'] == 'MASTER') {
+      print(11);
       final masterInfo = pj_diff_and_score()
         ..diff = old_pj_songs.master.diff
         ..bestPerfect = scoreData["perfect"]
@@ -143,7 +139,7 @@ class IsarService {
         ..hard = old_pj_songs.hard
         ..expert = old_pj_songs.expert
         ..master = masterInfo;
-    } else if (scoreData['diff'] == 'Expert') {
+    } else if (scoreData['diff'] == 'EXPERT') {
       final expertInfo = pj_diff_and_score()
         ..diff = old_pj_songs.expert.diff
         ..bestPerfect = scoreData["perfect"]
@@ -159,7 +155,7 @@ class IsarService {
         ..hard = old_pj_songs.hard
         ..expert = expertInfo
         ..master = old_pj_songs.master;
-    } else if (scoreData['diff'] == 'Hard') {
+    } else if (scoreData['diff'] == 'HARD') {
       final hardInfo = pj_diff_and_score()
         ..diff = old_pj_songs.hard.diff
         ..bestPerfect = scoreData["perfect"]
@@ -175,7 +171,7 @@ class IsarService {
         ..hard = hardInfo
         ..expert = old_pj_songs.expert
         ..master = old_pj_songs.master;
-    } else if (scoreData['diff'] == 'Normal') {
+    } else if (scoreData['diff'] == 'NORMAL') {
       final normalInfo = pj_diff_and_score()
         ..diff = old_pj_songs.normal.diff
         ..bestPerfect = scoreData["perfect"]
@@ -208,6 +204,7 @@ class IsarService {
         ..expert = old_pj_songs.expert
         ..master = old_pj_songs.master;
     }
+    print(songInfo.master.bestPerfect);
     await isar.writeTxn(() async => await isar.pj_songs.put(songInfo));
   }
 
@@ -249,7 +246,6 @@ class IsarService {
         ..expert = old_pj_songs.expert
         ..master = masterInfo;
     } else if (scoreMap['diff'] == 'Expert') {
-      print(1);
       final expertInfo = pj_diff_and_score()
         ..diff = old_pj_songs.expert.diff
         ..bestPerfect = scoreMap["perfect"]
@@ -326,7 +322,7 @@ class IsarService {
   Future<List> getPjScores(String sortSetting) async {
     final isar = await db;
     List result = [];
-    if (sortSetting == "default") {
+    if (sortSetting == "デフォルト") {
       result = await isar.pj_songs.where().findAll();
     } else if (sortSetting == "曲名") {
       result = await isar.pj_songs.where().sortByName().findAll();

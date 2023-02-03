@@ -5,8 +5,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:project_score/constant.dart';
 import 'package:project_score/db/db.dart';
 import 'package:project_score/db/pj_songs.dart';
+import 'package:project_score/model/ad.dart';
 import 'package:project_score/parse_score.dart';
 import 'package:flutter/services.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class ShowList extends ConsumerStatefulWidget {
   const ShowList({super.key});
@@ -17,9 +19,16 @@ class ShowList extends ConsumerStatefulWidget {
 class ShowListState extends ConsumerState<ShowList> {
   final TextRecognizer _textRecognizer =
       TextRecognizer(script: TextRecognitionScript.japanese);
+  BannerAd myBanner = BannerAd(
+    adUnitId: getTestAdBannerUnitId(),
+    size: AdSize.banner,
+    request: const AdRequest(),
+    listener: const BannerAdListener(),
+  );
   @override
   void initState() {
     super.initState();
+    myBanner.load();
     Future(() async {
       await IsarService().updatePjSong();
     });
@@ -37,6 +46,7 @@ class ShowListState extends ConsumerState<ShowList> {
         return Column(
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
                   onPressed: _onPressed,
@@ -78,6 +88,11 @@ class ShowListState extends ConsumerState<ShowList> {
                 ),
               ),
             ),
+            SizedBox(
+              height: 50.0,
+              width: double.infinity,
+              child: AdWidget(ad: myBanner),
+            )
           ],
         );
       },
@@ -134,7 +149,7 @@ class SongDataTable extends ConsumerWidget {
         DataColumn(label: Text("曲名")),
         DataColumn(label: Text("難易度")),
         DataColumn(label: Text("レベル")),
-        DataColumn(label: Text("Best Score")),
+        DataColumn(label: Text("最高記録")),
       ],
       rows: songData
           .map((e) => DataRow(
@@ -231,7 +246,6 @@ class ScoreText extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final diff = ref.watch(levelProvider);
-    print("scoretext $diff");
     if (diff == "Master") {
       if (e.master.bestPerfect == null) {
         return const Text("-");
