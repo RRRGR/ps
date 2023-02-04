@@ -123,7 +123,6 @@ class IsarService {
     }
     final old_pj_songs = result[0];
     if (scoreData['diff'] == 'MASTER') {
-      print(11);
       final masterInfo = pj_diff_and_score()
         ..diff = old_pj_songs.master.diff
         ..bestPerfect = scoreData["perfect"]
@@ -204,7 +203,6 @@ class IsarService {
         ..expert = old_pj_songs.expert
         ..master = old_pj_songs.master;
     }
-    print(songInfo.master.bestPerfect);
     await isar.writeTxn(() async => await isar.pj_songs.put(songInfo));
   }
 

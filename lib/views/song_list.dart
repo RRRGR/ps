@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:project_score/constant.dart';
 import 'package:project_score/db/db.dart';
 import 'package:project_score/db/pj_songs.dart';
@@ -9,6 +10,8 @@ import 'package:project_score/model/ad.dart';
 import 'package:project_score/parse_score.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'dart:io';
+import 'package:image/image.dart' as img;
 
 class ShowList extends ConsumerStatefulWidget {
   const ShowList({super.key});
@@ -111,25 +114,45 @@ class ShowListState extends ConsumerState<ShowList> {
   }
 
   void _onPressed() async {
+    if (!mounted) return;
+    showDialog(context: context, builder: (_) => ReadingAlert());
     final List<XFile> images = await ImagePicker().pickMultiImage();
-    if (images.isEmpty) return;
+    if (images.isEmpty) {
+      if (!mounted) return;
+      Navigator.pop(context);
+      return;
+    }
     for (XFile image in images) {
       dynamic path = image.path;
       if (path == null) {
         return;
       }
+      // img.Image? imgImage = img.decodeImage(File(path).readAsBytesSync());
+      // imgImage = img.luminanceThreshold(imgImage!);
+      // Directory tempDir = await getTemporaryDirectory();
+      // String tempPath = '${tempDir.path}/a.png';
+      // await (img.Command()
+      //       ..decodeImageFile(path)
+      //       ..luminanceThreshold()
+      //       ..writeToFile(tempPath))
+      //     .executeThread();
+
+      // encodeToJpgFile('out/thumbnail-test.png', thumbnail);
       final inputImage = InputImage.fromFilePath(path);
       Map scoreInfo;
       try {
         scoreInfo = await processImage(inputImage);
+        await IsarService().updateScore(scoreInfo);
       } catch (e) {
         print(e);
         if (!mounted) return;
+        Navigator.pop(context);
         showDialog(context: context, builder: (_) => const ErrorAlert());
         return;
       }
-      await IsarService().updateScore(scoreInfo);
     }
+    if (!mounted) return;
+    Navigator.pop(context);
     if (!mounted) return;
     showDialog(context: context, builder: (_) => const OKAlert());
   }
@@ -400,6 +423,16 @@ class EditScoreAlert extends ConsumerWidget {
           },
         )
       ],
+    );
+  }
+}
+
+class ReadingAlert extends ConsumerWidget {
+  const ReadingAlert({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return const AlertDialog(
+      content: Text('準備中...'),
     );
   }
 }
