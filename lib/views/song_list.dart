@@ -34,6 +34,7 @@ class ShowListState extends ConsumerState<ShowList> {
     myBanner.load();
     Future(() async {
       await IsarService().updatePjSong();
+      ref.refresh(streamSongDataProvider);
     });
   }
 
